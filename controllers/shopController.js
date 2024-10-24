@@ -49,7 +49,7 @@ const createShop = async (req, res) => {
 
 const getAllShop = async (req, res) => {
   try {
-    const { shopName, adminEmail, productName, stock } = req.query;
+    const { shopName, adminEmail, productName, stock, limit = 10, page = 1} = req.query;
 
     const conditions = {};
     if (shopName) conditions.name = { [Op.iLike]: `%${shopName}%` };
@@ -58,7 +58,11 @@ const getAllShop = async (req, res) => {
     if (productName) prodctCondition.name = { [Op.iLike]: `%${productName}%` };
     if (stock) prodctCondition.stock = stock;
 
-    const shops = await Shops.findAll({
+    const itemsPerPage = parseInt(limit);
+    const currentPage = parseInt(page);
+    const offset = (currentPage - 1) * itemsPerPage;
+
+    const { count, rows: shops } = await Shops.findAndCountAll({
       include: [
         {
           model: Products,
@@ -73,18 +77,22 @@ const getAllShop = async (req, res) => {
         },
       ],
       attributes: ["name", "adminEmail"],
-      where: conditions, 
+      where: conditions,
+      limit: itemsPerPage, // Batasi jumlah data per halaman
+      offset: offset, // Tentukan dari mana data dimulai 
     });
 
-    const totalData = shops.length;
+    const totalPages = Math.ceil(count / itemsPerPage);
 
     res.status(200).json({
       status: "Success",
       message: "Success get shops data",
       isSuccess: true,
       data: {
-        totalData,
-        shops,
+        totalData: count, 
+        totalPages, 
+        currentPage, 
+        shops, 
       },
     });
   } catch (error) {
