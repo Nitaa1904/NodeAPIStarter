@@ -51,7 +51,7 @@ const createProduct = async (req, res) => {
 const getAllProduct = async (req, res) => {
   try {
     // Extract query params for filtering
-    const { productName, minPrice, maxPrice, stock } = req.query;
+    const { productName, minPrice, maxPrice, stock, limit = 10, page = 1 } = req.query; // 1. limit page default
 
     const productCondition = {};
 
@@ -66,8 +66,14 @@ const getAllProduct = async (req, res) => {
     }
     if (stock) productCondition.stock = stock;
 
-    // Fetch all products based on the conditions and include the related Shop data
-    const products = await Products.findAll({
+    // 2. Variabel untuk pagination
+    const itemsPerPage = parseInt(limit); // Defaultnya adalah 10 item per halaman
+    const currentPage = parseInt(page); // Defaultnya adalah halaman 1
+    const offset = (currentPage - 1) * itemsPerPage; // Menghitung offset (Menentukan dari data ke berapa kita memulai pengambilan data) berdasarkan halaman
+
+
+    // 3. Mengambil produk berdasarkan kondisi dan pagination
+    const { count, rows: products } = await Products.findAndCountAll({
       where: productCondition,
       include: [
         {
@@ -79,15 +85,19 @@ const getAllProduct = async (req, res) => {
       attributes: ["name", "images", "stock", "price"],
     });
 
-    const totalData = products.length;
+    // 4. menghitung total halaman
+    const totalPages = Math.ceil(count / itemsPerPage);
 
     res.status(200).json({
       status: "Success",
       message: "Success get products data",
       isSuccess: true,
       data: {
-        totalData,
-        products,
+        // 5 output
+        totalData: count,
+        totalPages, 
+        currentPage, 
+        products, 
       },
     });
   } catch (error) {
