@@ -1,4 +1,5 @@
 const { Products, Shops } = require("../models");
+const { Op, where } = require("sequelize");
 
 const createProduct = async (req, res) => {
   const { name, stock, price, shopId } = req.body;
@@ -49,20 +50,43 @@ const createProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
+    // Extract query params for filtering
+    const { productName, minPrice, maxPrice, stock } = req.query;
+
+    const productCondition = {};
+
+    // Add filtering conditions based on query params
+    if (productName) productCondition.name = { [Op.iLike]: `%${productName}%` };
+    if (minPrice) productCondition.price = { [Op.gte]: minPrice }; // gte lebih besar dari atau sama dengan
+    if (maxPrice) {
+      productCondition.price = {
+        ...productCondition.price,
+        [Op.lte]: maxPrice, // ite lebih kecil dari atau sama dengan.
+      };
+    }
+    if (stock) productCondition.stock = stock;
+
+    // Fetch all products based on the conditions and include the related Shop data
     const products = await Products.findAll({
+      where: productCondition,
       include: [
         {
           model: Shops,
           as: "shop",
+          attributes: ["name", "adminEmail"], 
         },
       ],
+      attributes: ["name", "images", "stock", "price"],
     });
+
+    const totalData = products.length;
 
     res.status(200).json({
       status: "Success",
       message: "Success get products data",
       isSuccess: true,
       data: {
+        totalData,
         products,
       },
     });
@@ -86,6 +110,7 @@ const getAllProduct = async (req, res) => {
     });
   }
 };
+
 
 const getProductById = async (req, res) => {
   const id = req.params.id;
