@@ -1,5 +1,5 @@
 const { Shops, Products, Users } = require("../models");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 const createShop = async (req, res) => {
   const { name, adminEmail, userId } = req.body;
@@ -49,20 +49,18 @@ const createShop = async (req, res) => {
 
 const getAllShop = async (req, res) => {
   try {
-    const { shopName, adminEmail, productName, stock, limit = 10, page = 1} = req.query;
+    const { shopName, adminEmail, productName, stock, page = 1, limit = 10,} = req.query;
 
     const conditions = {};
-    if (shopName) conditions.name = { [Op.iLike]: `%${shopName}%` };
+    if (shopName) { condition.name = { [Op.iLike]: `%${shopName}%`, };}
 
     const prodctCondition = {};
     if (productName) prodctCondition.name = { [Op.iLike]: `%${productName}%` };
     if (stock) prodctCondition.stock = stock;
 
-    const itemsPerPage = parseInt(limit);
-    const currentPage = parseInt(page);
-    const offset = (currentPage - 1) * itemsPerPage;
+    const offset = (page - 1) * limit;
 
-    const { count, rows: shops } = await Shops.findAndCountAll({
+    const shops = await Shops.findAndCountAll({
       include: [
         {
           model: Products,
@@ -82,7 +80,9 @@ const getAllShop = async (req, res) => {
       offset: offset, // Tentukan dari mana data dimulai 
     });
 
-    const totalPages = Math.ceil(count / itemsPerPage);
+    const totalData = shops.count;
+
+    const totalPages = Math.ceil(count / limit);
 
     res.status(200).json({
       status: "Success",

@@ -1,31 +1,28 @@
 const { Users } = require("../models");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 const findUsers = async (req, res, next) => {
   try {
-    // Ambil query params untuk filtering
-    const { name, age, role, address, shopId, page = 1, limit = 10, } = req.query;
+    const { name, age, role, address, shopId, page = 1, limit = 10 } = req.query;
 
     const userCondition = {};
 
     if (name) userCondition.name = { [Op.iLike]: `%${name}%` };
-    if (minAge) userCondition.age = { [Op.gte]: minAge };
-    if (maxAge) {
-      userCondition.age = {
-        ...userCondition.age,
-        [Op.lte]: maxAge,
-      };
-    }
-    if (role) userCondition.role = { [Op.iLike]: `%${role}%` };
+    if (age) userCondition.age = age;
+    if (role) userCondition.role = role;
     if (address) userCondition.address = { [Op.iLike]: `%${address}%` };
+    if (shopId) userCondition.shopId = shopId;
 
-    // Fetch semua pengguna berdasarkan syarat pencarian
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
     const users = await Users.findAndCountAll({
       where: userCondition,
-      attributes: ["id", "name", "age", "role", "address"],
+      limit: parseInt(limit),
+      offset: offset,
     });
 
     const totalData = users.count;
+    const totalPages = Math.ceil(totalData / limit);
 
     res.status(200).json({
       status: "Success",
@@ -33,11 +30,13 @@ const findUsers = async (req, res, next) => {
       isSuccess: true,
       data: {
         totalData,
-        users,
+        totalPages,
+        currentPage: parseInt(page),
+        users: users.rows,
       },
     });
   } catch (err) {
-    console.error(err.name);
+    console.error(err);
     res.status(500).json({
       status: "Failed",
       message: "Terjadi kesalahan pada server",
@@ -55,38 +54,62 @@ const findUserById = async (req, res, next) => {
       },
     });
 
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "Pengguna tidak ditemukan",
+        isSuccess: false,
+      });
+    }
+
     res.status(200).json({
       status: "Success",
       data: {
         user,
       },
     });
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "Failed",
+      message: "Terjadi kesalahan pada server",
+      isSuccess: false,
+      data: null,
+    });
+  }
 };
 
 const updateUser = async (req, res, next) => {
   const { name, age, role, address, shopId } = req.body;
   try {
-    await Users.update(
+    const [updated] = await Users.update(
+      { name, age, role, address, shopId },
       {
-        name,
-        age,
-        role,
-        address,
-        shopId,
-      },
-      {
-        where: {
-          id: req.params.id,
-        },
+        where: { id: req.params.id },
       }
     );
 
+    if (!updated) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "Pengguna tidak ditemukan",
+        isSuccess: false,
+      });
+    }
+
     res.status(200).json({
       status: "Success",
-      message: "sukses update user",
+      message: "Sukses update user",
+      isSuccess: true,
     });
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "Failed",
+      message: "Terjadi kesalahan pada server",
+      isSuccess: false,
+    });
+  }
 };
 
 const deleteUser = async (req, res, next) => {
@@ -97,6 +120,14 @@ const deleteUser = async (req, res, next) => {
       },
     });
 
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "Pengguna tidak ditemukan",
+        isSuccess: false,
+      });
+    }
+
     await Users.destroy({
       where: {
         id: req.params.id,
@@ -105,9 +136,17 @@ const deleteUser = async (req, res, next) => {
 
     res.status(200).json({
       status: "Success",
-      message: "sukses delete user",
+      message: "Sukses delete user",
+      isSuccess: true,
     });
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      status: "Failed",
+      message: "Terjadi kesalahan pada server",
+      isSuccess: false,
+    });
+  }
 };
 
 module.exports = {
