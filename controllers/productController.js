@@ -1,16 +1,16 @@
+const { where } = require("sequelize");
 const { Products, Shops } = require("../models");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 const createProduct = async (req, res) => {
   const { name, stock, price, shopId } = req.body;
-
   try {
     const newProduct = await Products.create({
       name,
       stock,
       price,
       shopId,
-    });
+    })
 
     res.status(201).json({
       status: "Success",
@@ -51,42 +51,41 @@ const createProduct = async (req, res) => {
 const getAllProduct = async (req, res) => {
   try {
     // Extract query params for filtering
-    const { productName, minPrice, maxPrice, stock, limit = 10, page = 1 } = req.query; // 1. limit page default
+    const { productName, price, shopName, stock, limit = 10, page = 1 } = req.query; // 1. limit page default
 
     const productCondition = {};
 
     // Add filtering conditions based on query params
     if (productName) productCondition.name = { [Op.iLike]: `%${productName}%` };
-    if (minPrice) productCondition.price = { [Op.gte]: minPrice }; // gte lebih besar dari atau sama dengan
-    if (maxPrice) {
-      productCondition.price = {
-        ...productCondition.price,
-        [Op.lte]: maxPrice, // ite lebih kecil dari atau sama dengan.
-      };
-    }
     if (stock) productCondition.stock = stock;
 
     // 2. Variabel untuk pagination
-    const itemsPerPage = parseInt(limit); // Defaultnya adalah 10 item per halaman
-    const currentPage = parseInt(page); // Defaultnya adalah halaman 1
-    const offset = (currentPage - 1) * itemsPerPage; // Menghitung offset (Menentukan dari data ke berapa kita memulai pengambilan data) berdasarkan halaman
+    const shop = {};
+    if (shopName) shop.name = { [Op.like]: `%${shopName}%` };
+    const offset = (page - 1) * limit; // Menghitung offset (Menentukan dari data ke berapa kita memulai pengambilan data) berdasarkan halaman
 
 
     // 3. Mengambil produk berdasarkan kondisi dan pagination
-    const { count, rows: products } = await Products.findAndCountAll({
-      where: productCondition,
+    const products = await Products.findAndCountAll({
       include: [
         {
           model: Shops,
           as: "shop",
-          attributes: ["name", "adminEmail"], 
+          attributes: ["id", "name"], 
+          where: shop,
+
         },
       ],
-      attributes: ["name", "images", "stock", "price"],
+      attributes: ["id", "name", "stock", "price"],
+      where: productCondition,
+      limit: limit,
+      offset: offset,
     });
 
     // 4. menghitung total halaman
-    const totalPages = Math.ceil(count / itemsPerPage);
+    const totalData = products.count;
+
+    const totalPages = Math.ceil(totalData / limit);
 
     res.status(200).json({
       status: "Success",
@@ -94,10 +93,10 @@ const getAllProduct = async (req, res) => {
       isSuccess: true,
       data: {
         // 5 output
-        totalData: count,
+        totalData,
         totalPages, 
-        currentPage, 
-        products, 
+        currentPage: page,
+        products: products.rows 
       },
     });
   } catch (error) {

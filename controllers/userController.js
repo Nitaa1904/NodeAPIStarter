@@ -1,10 +1,10 @@
 const { Users } = require("../models");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 const findUsers = async (req, res, next) => {
   try {
     // Ambil query params untuk filtering
-    const { name, minAge, maxAge, role, address } = req.query;
+    const { name, age, role, address, shopId, page = 1, limit = 10, } = req.query;
 
     const userCondition = {};
 
@@ -20,12 +20,12 @@ const findUsers = async (req, res, next) => {
     if (address) userCondition.address = { [Op.iLike]: `%${address}%` };
 
     // Fetch semua pengguna berdasarkan syarat pencarian
-    const users = await Users.findAll({
+    const users = await Users.findAndCountAll({
       where: userCondition,
       attributes: ["id", "name", "age", "role", "address"],
     });
 
-    const totalData = users.length;
+    const totalData = users.count;
 
     res.status(200).json({
       status: "Success",
