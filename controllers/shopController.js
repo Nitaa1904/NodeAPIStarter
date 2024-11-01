@@ -8,16 +8,14 @@ const createShop = async (req, res) => {
     const newShop = await Shops.create({
       name,
       adminEmail,
-      userId,
+      userId: req.user.id,
     });
 
     res.status(201).json({
       status: "Success",
-      message: "Success create new Shop",
+      message: "Successfully created new Shop",
       isSuccess: true,
-      data: {
-        newShop,
-      },
+      data: { newShop },
     });
   } catch (error) {
     console.log(error.name);
@@ -49,50 +47,74 @@ const createShop = async (req, res) => {
 
 const getAllShop = async (req, res) => {
   try {
-    const { shopName, adminEmail, productName, stock, page = 1, limit = 10,} = req.query;
+    const { shopName, adminEmail, productName, stock, size, page, userName } = req.query;
 
-    const conditions = {};
-    if (shopName) { condition.name = { [Op.iLike]: `%${shopName}%`, };}
+    const condition = {};
+    if (shopName) condition.name = { [Op.iLike]: `%${shopName}%` };
+    if (adminEmail) condition.adminEmail = { [Op.iLike]: `%${adminEmail}%` };
 
-    const prodctCondition = {};
-    if (productName) prodctCondition.name = { [Op.iLike]: `%${productName}%` };
-    if (stock) prodctCondition.stock = stock;
+    const productCondition = {};
+    if (productName) productCondition.name = { [Op.iLike]: `%${productName}%` };
+    if (stock) productCondition.stock = stock;
 
-    const offset = (page - 1) * limit;
+    const userCondition = {};
+    if (userName) userCondition.name = { [Op.iLike]: `%${userName}%` };
 
-    const shops = await Shops.findAndCountAll({
+    const pageSize = parseInt(size, 10) || 10;
+    const pageNum = parseInt(page, 10) || 1;
+    const offset = (pageNum - 1) * pageSize;
+
+    const totalCount = await Shops.count({
+      include: [
+        {
+          model: Products,
+          as: "products",
+          where: productCondition,
+        },
+        {
+          model: Users,
+          as: "user",
+          where: userCondition,
+        },
+      ],
+      where: condition,
+    });
+
+    const shops = await Shops.findAll({
       include: [
         {
           model: Products,
           as: "products",
           attributes: ["name", "images", "stock", "price"],
-          where: prodctCondition,
+          where: productCondition,
         },
         {
           model: Users,
           as: "user",
           attributes: ["name"],
+          where: userCondition,
         },
       ],
       attributes: ["name", "adminEmail"],
-      where: conditions,
-      limit: itemsPerPage, // Batasi jumlah data per halaman
-      offset: offset, // Tentukan dari mana data dimulai 
+      where: condition,
+      limit: pageSize,
+      offset,
     });
 
-    const totalData = shops.count;
-
-    const totalPages = Math.ceil(count / limit);
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     res.status(200).json({
       status: "Success",
-      message: "Success get shops data",
+      message: "Successfully retrieved shop data",
       isSuccess: true,
       data: {
-        totalData: count, 
-        totalPages, 
-        currentPage, 
-        shops, 
+        totalData: totalCount,
+        shops,
+        pagination: {
+          page: pageNum,
+          size: pageSize,
+          totalPages,
+        },
       },
     });
   } catch (error) {
@@ -121,32 +143,39 @@ const getShopById = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const Shop = await Shops.findOne({
-      where: {
-        id,
-      },
+    const shop = await Shops.findOne({
+      where: { id },
+      include: [
+        {
+          model: Products,
+          as: "products",
+          attributes: ["name", "images", "stock", "price"],
+        },
+        {
+          model: Users,
+          as: "user",
+          attributes: ["name"],
+        },
+      ],
     });
 
-    res.status(200).json({
-      status: "Success",
-      message: "Success get shop data",
-      isSuccess: true,
-      data: {
-        Shop,
-      },
-    });
-  } catch (error) {
-    console.log(error.name);
-    if (error.name === "SequelizeValidationError") {
-      const errorMessage = error.errors.map((err) => err.message);
-      return res.status(400).json({
+    if (!shop) {
+      return res.status(404).json({
         status: "Fail",
-        message: errorMessage[0],
+        message: "Shop not found",
         isSuccess: false,
         data: null,
       });
     }
 
+    res.status(200).json({
+      status: "Success",
+      message: "Successfully retrieved shop data",
+      isSuccess: true,
+      data: { shop },
+    });
+  } catch (error) {
+    console.log(error.name);
     res.status(500).json({
       status: "Fail",
       message: error.message,
@@ -161,38 +190,24 @@ const updateShop = async (req, res) => {
   const { name, adminEmail } = req.body;
 
   try {
-    const Shop = await Shops.findOne({
-      where: {
-        id,
-      },
-    });
+    const shop = await Shops.findOne({ where: { id } });
 
-    if (!Shop) {
-      res.status(404).json({
+    if (!shop) {
+      return res.status(404).json({
         status: "Fail",
-        message: "Data not found",
+        message: "Shop not found",
         isSuccess: false,
         data: null,
       });
     }
 
-    await Shops.update({
-      name,
-      adminEmail,
-    });
+    await shop.update({ name, adminEmail });
 
     res.status(200).json({
       status: "Success",
-      message: "Success update shop",
+      message: "Successfully updated shop",
       isSuccess: true,
-      data: {
-        Shop: {
-          id,
-          name,
-          stock,
-          price,
-        },
-      },
+      data: { shop },
     });
   } catch (error) {
     console.log(error.name);
@@ -219,26 +234,22 @@ const deleteShop = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const Shop = await Shops.findOne({
-      where: {
-        id,
-      },
-    });
+    const shop = await Shops.findOne({ where: { id } });
 
-    if (!Shop) {
-      res.status(404).json({
+    if (!shop) {
+      return res.status(404).json({
         status: "Fail",
-        message: "Data not found",
+        message: "Shop not found",
         isSuccess: false,
         data: null,
       });
     }
 
-    await Shops.destroy();
+    await Shops.destroy({ where: { id } });
 
     res.status(200).json({
       status: "Success",
-      message: "Success delete shop",
+      message: "Successfully deleted shop",
       isSuccess: true,
       data: null,
     });
