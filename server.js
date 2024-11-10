@@ -17,10 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(morgan("dev"));
 
-
 app.get("/api/v1/health-check", systemController.healtcheck);
 app.use("/api/v1", router);
-app.use("/api-docs", router);
+app.use("/api-docs", docsRouter);
 
 app.use(systemController.onLost);
 
