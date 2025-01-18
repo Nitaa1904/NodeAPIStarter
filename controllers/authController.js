@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
-const { Auth, Users } = require("../models");
+const { Auths, Users } = require("../models");
 const { JsonWebTokenError } = require("jsonwebtoken");
 
 const register = async (req, res, next) => {
@@ -38,11 +38,12 @@ const login = async (req, res, next) => {
       });
     }
 
-    if (data && bcrypt.compareSync(password, data.user.password)) { 
+    // console.log(data);
+    if (data && bcrypt.compareSync(password, data.password)) {
       const token = jwt.sign(
         {
           id: data.id,
-          username: data.user.name, 
+          username: data.user.name,
           email: data.email,
           userId: data.user.id,
         },
@@ -57,28 +58,27 @@ const login = async (req, res, next) => {
         message: "Berhasil login",
         isSuccess: true,
         data: {
-          username: data.user.name, 
+          username: data.user.name,
+          token,
         },
       });
     } else {
       res.status(401).json({
         status: "Failed",
         message: "Incorrect password",
-        isSuccess: false, 
+        isSuccess: false,
         data: null,
       });
     }
   } catch (err) {
-    res.status(500).json({ 
+    console.log(err);
+    res.status(500).json({
       status: "Failed",
       message: "An error occurred",
       data: null,
     });
   }
 };
-
-
-        
 
 const authenticate = async (req, res) => {
   try {
