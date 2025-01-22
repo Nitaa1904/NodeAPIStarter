@@ -2,15 +2,19 @@ const { where } = require("sequelize");
 const { Products, Shops } = require("../models");
 const { Op } = require("sequelize");
 
+// 4. buat function createProduct
 const createProduct = async (req, res) => {
+  // defind objeknya (yang bukan file)
   const { name, stock, price, shopId } = req.body;
   try {
+    // create data baru ke databasenya
     const newProduct = await Products.create({
+      // request bodynya { gak usah defind value jika valui dari q nya sama }
       name,
       stock,
       price,
       shopId,
-    })
+    });
 
     res.status(201).json({
       status: "Success",
@@ -22,6 +26,7 @@ const createProduct = async (req, res) => {
     });
   } catch (error) {
     console.log(error.name);
+    // better error handling
     if (error.name === "SequelizeValidationError") {
       const errorMessage = error.errors.map((err) => err.message);
       return res.status(400).json({
@@ -51,7 +56,14 @@ const createProduct = async (req, res) => {
 const getAllProduct = async (req, res) => {
   try {
     // Extract query params for filtering
-    const { productName, price, shopName, stock, limit = 10, page = 1 } = req.query; // 1. limit page default
+    const {
+      productName,
+      price,
+      shopName,
+      stock,
+      limit = 10,
+      page = 1,
+    } = req.query; // 1. limit page default
 
     const productCondition = {};
 
@@ -64,16 +76,14 @@ const getAllProduct = async (req, res) => {
     if (shopName) shop.name = { [Op.like]: `%${shopName}%` };
     const offset = (page - 1) * limit; // Menghitung offset (Menentukan dari data ke berapa kita memulai pengambilan data) berdasarkan halaman
 
-
     // 3. Mengambil produk berdasarkan kondisi dan pagination
     const products = await Products.findAndCountAll({
       include: [
         {
           model: Shops,
           as: "shop",
-          attributes: ["id", "name"], 
+          attributes: ["id", "name"],
           where: shop,
-
         },
       ],
       attributes: ["id", "name", "stock", "price"],
@@ -94,9 +104,9 @@ const getAllProduct = async (req, res) => {
       data: {
         // 5 output
         totalData,
-        totalPages, 
+        totalPages,
         currentPage: page,
-        products: products.rows 
+        products: products.rows,
       },
     });
   } catch (error) {
@@ -119,7 +129,6 @@ const getAllProduct = async (req, res) => {
     });
   }
 };
-
 
 const getProductById = async (req, res) => {
   const id = req.params.id;

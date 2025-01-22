@@ -27,13 +27,16 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 - Middleware kustom untuk melindungi endpoint.
 - Struktur proyek yang terorganisasi dan aman.
 
-  # Langkah Langkah
+---
+
+# Langkah Langkah
 
 - npm init
 - buat bin/www (untuk start project)
 - set package.json (ngebaca bi/www)
   "start": "node -r dotenv/config bin/www",
   "dev": "nodemon -r dotenv/config bin/www",
+  dan lainnya
 - npm install dotenv nodemon morgan express
 - buat server.js
 
@@ -43,21 +46,86 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 
 ## Database Diagram
 
+3. middleware baca request body || server.js
+
 - menggunakan db diagram
 <p align="center">
   <img src="public/images/db-diagram.png" alt="alt text" width="500" />
 </p>
 
+### migrations
+
 - buat relasi model di sequelize
 - npm i sequelize sequelize-cli pg pg-hstore
 - npx sequlize init
-- npx sequelize model:generate --name Students --attributes last_name:string,email:string,password:string
-- settting validasi data yang mau asuk ke database || migrations
-- npx sequelize db:migrate
+- npx sequelize model:generate --name Products --attributes name:string,images:array,stock:integer,price:integer
+- npx sequelize model:generate --name Shops --attributes name:string,productId:integer,userId:integer
+- settting validasi atau modifikasi data disetiap kolomnya yang mau masuk ke database || migrations
+  noted boleh diubah2 isinya disesuaikan sebelum di migrate
+- npm run db:migrate
 - set config/config.json
 - npx sequelize db:create (jika databasenya baru)
 - npx sequelize db:migrate
 
-3. middleware baca request body || server.js
+  noted : buat konfigurasi mvp sesuai db diagram(model, view, and controller)
 
-noted : buat konfigurasi mvp (model, view, and controller)
+### models
+
+- cek apakah udah sesuai dengan yang ada di miggrations
+- tambahkan validate dan overide message
+
+### Controllers
+
+- buat productCotroller.js
+
+4. buat function createProduct
+
+### Routes
+
+- index.js isinya redirek atau modul routesnya
+
+5. buat API getnya (productRoutes.js)
+6. defind di routes/index.js dan panggil router di server.js
+
+## Better Error Handling
+
+tambahkan di semua controller
+
+```javascript
+catch (error) {
+    console.log(error.name);
+
+    // Handle Sequelize validation errors
+    if (error.name === "SequelizeValidationError") {
+        const errorMessage = error.errors.map((err) => err.message);
+        return res.status(400).json({
+            status: "Failed",
+            message: errorMessage[0],
+            isSuccess: false,
+            data: null,
+        });
+    }
+
+    // Handle Sequelize database errors
+    else if (error.name === "SequelizeDatabaseError") {
+        return res.status(400).json({
+            status: "Failed",
+            message: error.message || "Database error",
+            isSuccess: false,
+            data: null,
+        });
+    }
+
+    // Handle other unexpected errors
+    else {
+        return res.status(500).json({
+            status: "Failed",
+            message: "An unexpected error occurred",
+            isSuccess: false,
+            data: null,
+        });
+    }
+}
+```
+
+## Relasi antar Table

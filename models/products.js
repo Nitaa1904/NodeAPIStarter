@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      // defind array dan isinya (text)
       images: DataTypes.ARRAY(DataTypes.TEXT),
       stock: {
         type: DataTypes.INTEGER,
@@ -42,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       price: {
         type: DataTypes.INTEGER,
+        // tambah validate
         validate: {
           min: {
             args: 5000,

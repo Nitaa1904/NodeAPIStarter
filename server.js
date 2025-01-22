@@ -21,6 +21,7 @@ app.use(morgan("dev"));
 
 // 2. buat health-check
 app.get("/api/v1/health-check", systemController.healtcheck);
+// 6. panggil router
 app.use("/api/v1", router);
 app.use("/api-docs", docsRouter);
 

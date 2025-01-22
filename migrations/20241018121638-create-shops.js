@@ -9,6 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      // awalnya email lalu ubah ke adminEmail
       adminEmail: {
         type: Sequelize.STRING,
         unique: true,
@@ -24,8 +25,16 @@ module.exports = {
           len: [4, 100],
         },
       },
+      // productId: {
+      //   type: Sequelize.INTEGER,
+      //   references: {
+      //    model: "Products",
+      //    key: "id",
+      // },
+      // },
       userId: {
         type: Sequelize.INTEGER,
+        // relasi antar tabel
         references: {
           model: "Users",
           key: "id",

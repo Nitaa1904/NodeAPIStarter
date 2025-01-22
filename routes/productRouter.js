@@ -1,8 +1,9 @@
 const router = require("express").Router();
 
-const {productController } = require("../controllers");
+const { productController } = require("../controllers");
 const authenticate = require("../middlewares/authenticate");
 
+// 5. buat API getnya
 router.post("", productController.createProduct);
 router.get("", productController.getAllProduct);
 router.get("/:id", authenticate, productController.getProductById);
