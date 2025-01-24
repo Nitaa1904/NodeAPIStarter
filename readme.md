@@ -67,8 +67,6 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 - npx sequelize db:create (jika databasenya baru)
 - npx sequelize db:migrate
 
-  noted : buat konfigurasi mvp sesuai db diagram(model, view, and controller)
-
 ### models
 
 - cek apakah udah sesuai dengan yang ada di miggrations
@@ -76,18 +74,12 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 
 ### Controllers
 
+- index.js isinya refaktor agar modular
 - buat productCotroller.js
 
-4. buat function createProduct
+4. buat function createProduct, getAllProduct, getProductById, updateProduct, deleteProduct
 
-### Routes
-
-- index.js isinya redirek atau modul routesnya
-
-5. buat API getnya (productRoutes.js)
-6. defind di routes/index.js dan panggil router di server.js
-
-## Better Error Handling
+#### Better Error Handling
 
 tambahkan di semua controller
 
@@ -128,4 +120,46 @@ catch (error) {
 }
 ```
 
-## Relasi antar Table
+### Routes
+
+- index.js isinya refaktor agar modular
+
+5. buat API post, get, get by id, pactch, delete (productRoutes.js)
+6. defind di routes/index.js dan panggil router di server.js
+
+   noted : buat konfigurasi mvp lainya sesuai db diagram (model, view, and controller)
+   tips untuk shop dan product hampir sama jadi tinggal dublicated dan ubah isinya sesuai tabel aja
+
+### seeder
+
+- npm i faker bcrypt | auth.js
+  faker untuk membuat data dummy
+
+### systemController
+
+refactor health-check dan 404 not found (untuk hendel semua yang ada di sistem)
+
+---
+
+## Relasi
+
+belongsTo (jika ditabel ada foreignKey)
+hasMany
+hasOne
+
+## Set Variabel di Postman
+
+buat base url
+
+- di postman {{nama_url}} lalu hover dan isi valuenya dengan localhost:3000/API/v1
+- untuk menyimpan klik + add to dan pilih collection
+
+---
+
+## Finalisasi config untuk server.js
+
+7. panggil morgan
+   morgan (untuk logger('dev')) adalah middleware Node.js dan Express yang digunakan untuk mencatat permintaan dan kesalahan HTTP
+8. panggil dotenv di baris pertama run apk, menandakan semua koding BE untuk panggil env
+9. panggil cors (agar API bisa dihit saat sudah dideploy, semua FE bisa akses api)
+   npm i cors

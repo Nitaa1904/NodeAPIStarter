@@ -1,5 +1,6 @@
 const router = require("express").Router();
 
+// pemanggilan index controllernya
 const { productController } = require("../controllers");
 const authenticate = require("../middlewares/authenticate");
 

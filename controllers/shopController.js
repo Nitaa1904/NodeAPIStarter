@@ -27,6 +27,7 @@ const createShop = async (req, res) => {
         isSuccess: false,
         data: null,
       });
+      // name harus string jika integer maka responya berikut
     } else if (error.name === "SequelizeDatabaseError") {
       return res.status(400).json({
         status: "Failed",
@@ -47,7 +48,8 @@ const createShop = async (req, res) => {
 
 const getAllShop = async (req, res) => {
   try {
-    const { shopName, adminEmail, productName, stock, size, page, userName } = req.query;
+    const { shopName, adminEmail, productName, stock, size, page, userName } =
+      req.query;
 
     const condition = {};
     if (shopName) condition.name = { [Op.iLike]: `%${shopName}%` };
@@ -137,7 +139,6 @@ const getAllShop = async (req, res) => {
     });
   }
 };
-
 
 const getShopById = async (req, res) => {
   const id = req.params.id;
