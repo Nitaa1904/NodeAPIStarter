@@ -87,16 +87,19 @@ const getAllShop = async (req, res) => {
         {
           model: Products,
           as: "products",
+          // 10. panggil apa aja yang akan ditampilkan
           attributes: ["name", "images", "stock", "price"],
           where: productCondition,
         },
         {
           model: Users,
           as: "user",
+          // 10. panggil apa aja yang akan ditampilkan
           attributes: ["name"],
           where: userCondition,
         },
       ],
+      // 10. agar lebih optimize
       attributes: ["name", "adminEmail"],
       where: condition,
       limit: pageSize,

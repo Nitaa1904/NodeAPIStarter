@@ -14,19 +14,6 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 4. **Error Handling Terstruktur:** Penanganan berbagai skenario kesalahan.
 5. **Health Check Endpoint:** Memastikan aplikasi berjalan dengan baik.
 
-### **Kompetensi yang Dipelajari:**
-
-- Implementasi middleware autentikasi JWT.
-- Penggunaan **bcrypt** untuk enkripsi password.
-- Dokumentasi API menggunakan Swagger UI.
-- Struktur kode modular dan validasi data pengguna.
-
-### **Output:**
-
-- API backend dengan autentikasi JWT dan dokumentasi Swagger.
-- Middleware kustom untuk melindungi endpoint.
-- Struktur proyek yang terorganisasi dan aman.
-
 ---
 
 # Langkah Langkah
@@ -163,3 +150,10 @@ buat base url
 8. panggil dotenv di baris pertama run apk, menandakan semua koding BE untuk panggil env
 9. panggil cors (agar API bisa dihit saat sudah dideploy, semua FE bisa akses api)
    npm i cors
+
+## attributes di sequelize query
+
+- misal hanya butuh "name", "images", "stock", "price" yang ditampilkan maka bisa menggunakan atribut
+- atribut dalam bentuk array
+
+10. panggil kolom apa aja yang akan ditampilkan di getAllShop | shopController
