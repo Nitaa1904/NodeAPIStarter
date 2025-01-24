@@ -157,3 +157,25 @@ buat base url
 - atribut dalam bentuk array
 
 10. panggil kolom apa aja yang akan ditampilkan di getAllShop | shopController
+
+## where advance dari join table untuk filter, pagination dan limit/row
+
+### Dinamis Filter
+
+11. jaga request query agar tidak kemana-mana dengan objek destrukturing
+12. cek kondisi statis dulu
+13. import OP, salah satu method sequelize untuk where dinamis kondisi (untuk handel saat kondisi statis harus serch namanya sama persis dengan yang ada didatabase menjadi dinamis) misal serch apel (statis) akan muncul tapi saat serch ape tidak muncu datanya tapi saat dinamis akan muncul data yang ada kata ape nya
+
+14. buat kondisi OP
+
+- iLike `%${shopName}%` (tabahkan % untuk mengabaikan kata lainnya asalkan ada yang benar)
+- bedanya sama like itu di case sensitive (iLike mengabaikan huruf besar kecil)
+
+15. Panggil kondisinya
+16. buat juga kondisi pada product dan user, panggil where sesuai kondisiya masing2 di include
+
+- cara get di postmannya {{nama_url}}/shops?shopName=collin (ganti collin dengan nama toko yang dicari)
+
+- saat user mau mencari product yang kurang dari 25 (misal)
+
+17. tambah total data di respon untuk menampilkan banyaknya data berdasarkan hasil filternya

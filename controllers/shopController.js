@@ -1,4 +1,5 @@
 const { Shops, Products, Users } = require("../models");
+// 13. import OP
 const { Op, where } = require("sequelize");
 
 const createShop = async (req, res) => {
@@ -48,16 +49,19 @@ const createShop = async (req, res) => {
 
 const getAllShop = async (req, res) => {
   try {
+    // 11. jaga request query agar tidak kemana-mana
     const { shopName, adminEmail, productName, stock, size, page, userName } =
       req.query;
 
+    // 14. buat kondisi OP
     const condition = {};
     if (shopName) condition.name = { [Op.iLike]: `%${shopName}%` };
     if (adminEmail) condition.adminEmail = { [Op.iLike]: `%${adminEmail}%` };
 
+    // 16. buat juga kondisi pada product dan user
     const productCondition = {};
     if (productName) productCondition.name = { [Op.iLike]: `%${productName}%` };
-    if (stock) productCondition.stock = stock;
+    if (stock) productCondition.stock = stock; // karena integer maka tidak perlu iLike
 
     const userCondition = {};
     if (userName) userCondition.name = { [Op.iLike]: `%${userName}%` };
@@ -101,6 +105,8 @@ const getAllShop = async (req, res) => {
       ],
       // 10. agar lebih optimize
       attributes: ["name", "adminEmail"],
+      // where: { name: shopName } => (12. Kondisi statis)
+      // 15. Panggil kondisinya
       where: condition,
       limit: pageSize,
       offset,
@@ -113,6 +119,7 @@ const getAllShop = async (req, res) => {
       message: "Successfully retrieved shop data",
       isSuccess: true,
       data: {
+        // 17. tambah total data di respon
         totalData: totalCount,
         shops,
         pagination: {
