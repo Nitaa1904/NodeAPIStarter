@@ -223,3 +223,34 @@ buat base url
     get di postman {{nama_url}}/shops?size=1&page=1&shopName=Group (ganti size, page, productName sesuai keinginan)
 
 noted: di product menggunakan findAndCountAll secara bersamaan
+
+## API Documentation
+
+- npm i swagger
+- npm i swagger-is-express
+- buat routes baru documentationRoute.js
+
+30. buat url swagger yang mengarah ke documentationRoute.js | server.js
+31. buat route baru docsRouter | server.js
+32. buat swaggerDocument dalam bentuk swagger.json | documentationRoute.js
+33. buat url use dan get swagger | documentationRoute.js
+
+buat docs/swagger.json
+isinya dibuat (contoh membuat dummy menggunakan ai hanya untuk tugas)
+
+- GET
+  get api shop
+  copy responnya, copy url atau api
+  tulis perintah create swagger.json for node js express project fot this API
+  tambah ke swagger.jsnya
+  sesuaikan schemanya dengan database
+  localhost:3000/api-docs/ (coba di browser)
+- POST
+  post api shop
+  copy url, request body, respon api
+  tulis perintah for create http method POST
+  sesuaikan responya dengan yang ada di localhost
+
+tambahkan juga yang failed
+copy respon api gagal
+tulis perintah add new example respon failed API for post

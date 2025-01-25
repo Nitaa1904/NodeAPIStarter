@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 const router = require("./routes");
+// 31. buat route baru
 const docsRouter = require("./routes/documentationRouter");
 
 const { systemController } = require("./controllers");
@@ -27,6 +28,7 @@ app.use(morgan("dev"));
 app.get("/api/v1/health-check", systemController.healtcheck);
 // 6. panggil router
 app.use("/api/v1", router);
+// 30. url swegger
 app.use("/api-docs", docsRouter);
 
 app.use(systemController.onLost);
