@@ -179,3 +179,47 @@ buat base url
 - saat user mau mencari product yang kurang dari 25 (misal)
 
 17. tambah total data di respon untuk menampilkan banyaknya data berdasarkan hasil filternya
+
+### Paginations
+
+- page => halaman
+- size => banyaknya data
+
+#### size Statis Paginations
+
+18. tambah limit: 10, = > set get berapa data di row query (batasan data)
+
+#### size Dinamis Paginations
+
+- tambahkan size di const request paramnya
+
+19. buat size pagination
+20. panggil pageSize
+    get di postman {{nama_url}}/shops?size=13 (ganti size sesuai keinginan)
+
+#### Page
+
+- tambahkan page di const request paramnya
+
+21. buat pageNum dengan default halaman 1
+
+22. buat offset
+23. tambah offset
+
+24. buat totalCount (ambil semua data dari query)
+25. buat totalPage (banyaknya halaman)
+26. tambah pagination untuk kasih tau client informasi page brapa size berapa
+27. paggil totalData dengan hasil totalCount, totalData: totalCount,
+    - get di postman {{nama_url}}/shops?size=13 (ganti size sesuai keinginan)
+    - akan tampil totalData, page, size, pageSize
+
+- cek pagination di postman
+- get di postman {{nama_url}}/shops?size=30&page=2 (ganti size dan page sesuai keinginan)
+
+28. tambahkan kondisi product dan user agar hasil total datanya benar saat serch data tertentu dan banyaknya data sesuai dengan yang terfilter
+    - get di postman {{nama_url}}/shops?size=1&page=1&productName=pizza (ganti size, page, productName sesuai keinginan)
+    - akan tampil totalData dengan nama pizza 5 (contohnya sesuai data asli di query) dan yang tampil di FE cuman satu (size 1)
+29. Tambahkan kondisi utuk shopName juga agar saat shopName difilter sesuai totalPage(semua data dengan nama tertentu) dan sesuai size yang di filter
+    get di postman {{nama_url}}/shops?size=1&page=1&shopName=Group (ganti size, page, productName sesuai keinginan)
+
+noted: di product menggunakan findAndCountAll secara bersamaan

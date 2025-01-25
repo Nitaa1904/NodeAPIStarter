@@ -66,23 +66,30 @@ const getAllShop = async (req, res) => {
     const userCondition = {};
     if (userName) userCondition.name = { [Op.iLike]: `%${userName}%` };
 
-    const pageSize = parseInt(size, 10) || 10;
+    // 19. size pagination
+    const pageSize = parseInt(size, 10) || 10; // tambah default value
+    // 21. buat pageNum
     const pageNum = parseInt(page, 10) || 1;
+    // 22. buat offset
     const offset = (pageNum - 1) * pageSize;
 
+    // 24. buat totalCount
     const totalCount = await Shops.count({
       include: [
         {
           model: Products,
           as: "products",
+          // 28. tambahkan kondisi agar hasil total datanya sesuai saat filter
           where: productCondition,
         },
         {
           model: Users,
           as: "user",
+          // 28. tambahkan kondisi agar hasil total datanya sesuai saat filter
           where: userCondition,
         },
       ],
+      // 29. Tambahkan kondisi utuk shopName
       where: condition,
     });
 
@@ -108,10 +115,13 @@ const getAllShop = async (req, res) => {
       // where: { name: shopName } => (12. Kondisi statis)
       // 15. Panggil kondisinya
       where: condition,
-      limit: pageSize,
+      // 18. tambah limit (limit: 10, (statis))
+      limit: pageSize, // 20. panggil pagesize
+      // 23. panggil offset
       offset,
     });
 
+    // 25. buat totalPage
     const totalPages = Math.ceil(totalCount / pageSize);
 
     res.status(200).json({
@@ -119,9 +129,10 @@ const getAllShop = async (req, res) => {
       message: "Successfully retrieved shop data",
       isSuccess: true,
       data: {
-        // 17. tambah total data di respon
-        totalData: totalCount,
+        // 17. tambah total data di respon (totalData,)
+        totalData: totalCount, // 27. panggil totalCount di totalData
         shops,
+        // 26. tambah pagination untuk informasi ke client
         pagination: {
           page: pageNum,
           size: pageSize,
