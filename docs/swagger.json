@@ -1,259 +1,243 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "version": "1.0.0",
-      "title": "Shop API",
-      "description": "API documentation for retrieving shop and product data"
-    },
-    "host": "localhost:3000",
-    "basePath": "/api",
-    "schemes": ["http"],
-    "paths": {
-      "/shops": {
-        "get": {
-          "summary": "Get list of shops",
-          "description": "Retrieve a list of shops with product details",
-          "responses": {
-            "200": {
-              "description": "Successfully retrieved shop data",
-              "schema": {
-                "$ref": "#/definitions/ShopResponse"
-              }
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Shops API",
+    "description": "API for managing shops and their products."
+  },
+  "host": "localhost:3000",
+  "basePath": "/API/v1/shops",
+  "schemes": ["http"],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Get all shops with their products",
+        "description": "Retrieve a list of shops along with their products and owner details.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/ShopsResponse"
             }
-          }
-        },
-        "post": {
-          "summary": "Create a new shop",
-          "description": "Endpoint to create a new shop",
-          "operationId": "createShop",
-          "consumes": ["application/json"],
-          "produces": ["application/json"],
-          "parameters": [
-            {
-              "in": "body",
-              "name": "body",
-              "description": "Data for the shop to be created",
-              "required": true,
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "Shop123"
-                  },
-                  "userId": {
-                    "type": "integer",
-                    "example": 10
-                  },
-                  "adminEmail": {
-                    "type": "string",
-                    "example": "admin@example.com"
-                  }
-                },
-                "required": ["name", "userId", "adminEmail"]
-              }
-            }
-          ],
-          "responses": {
-            "201": {
-              "description": "Successfully created new shop",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "example": "Success"
-                  },
-                  "message": {
-                    "type": "string",
-                    "example": "Successfully created new Shop"
-                  },
-                  "isSuccess": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "data": {
-                    "type": "object",
-                    "properties": {
-                      "newShop": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer",
-                            "example": 113
-                          },
-                          "name": {
-                            "type": "string",
-                            "example": "Shop123"
-                          },
-                          "userId": {
-                            "type": "integer",
-                            "example": 10
-                          },
-                          "adminEmail": {
-                            "type": "string",
-                            "example": "admin@example.com"
-                          },
-                          "createdAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "example": "2024-10-29T11:04:43.037Z"
-                          },
-                          "updatedAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "example": "2024-10-29T11:04:43.037Z"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Invalid input data"
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "string",
-                    "example": "Error"
-                  },
-                  "message": {
-                    "type": "string",
-                    "example": "Internal Server Error"
-                  },
-                  "isSuccess": {
-                    "type": "boolean",
-                    "example": false
-                  },
-                  "errorDetails": {
-                    "type": "string",
-                    "example": "Database connection failed"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "definitions": {
-      "ShopResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "Success"
-          },
-          "message": {
-            "type": "string",
-            "example": "Successfully retrieved shop data"
-          },
-          "isSuccess": {
-            "type": "boolean",
-            "example": true
-          },
-          "data": {
-            "$ref": "#/definitions/Data"
           }
         }
       },
-      "Data": {
-        "type": "object",
-        "properties": {
-          "totalData": {
-            "type": "integer",
-            "example": 100
-          },
-          "shops": {
-            "type": "array",
-            "items": {
+      "post": {
+        "summary": "Create a new shop",
+        "description": "Create a new shop with the provided name and userId.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateShopRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Shop created successfully",
+            "schema": {
               "$ref": "#/definitions/Shop"
             }
           },
-          "pagination": {
-            "$ref": "#/definitions/Pagination"
-          }
-        }
-      },
-      "Shop": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Cole Group"
-          },
-          "adminEmail": {
-            "type": "string",
-            "nullable": true,
-            "example": null
-          },
-          "products": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/Product"
+          "400": {
+            "description": "Invalid input",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
             }
           },
-          "user": {
-            "$ref": "#/definitions/User"
-          }
-        }
-      },
-      "Product": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Unbranded Metal Pants"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "example": "https://ik.imagekit.io/imamth/Profile-17-1729202156932_ieaMdNeZB.png?updatedAt=1729202158471"
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
             }
-          },
-          "stock": {
-            "type": "integer",
-            "example": 21
-          },
-          "price": {
-            "type": "integer",
-            "example": 13237
-          }
-        }
-      },
-      "User": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Mr. Frederick Reilly Sr."
-          }
-        }
-      },
-      "Pagination": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "example": 1
-          },
-          "size": {
-            "type": "integer",
-            "example": 10
-          },
-          "totalPages": {
-            "type": "integer",
-            "example": 10
           }
         }
       }
     }
+  },
+  "definitions": {
+    "ShopsResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "Success"
+        },
+        "message": {
+          "type": "string",
+          "example": "Success get shops data"
+        },
+        "isSuccess": {
+          "type": "boolean",
+          "example": true
+        },
+        "data": {
+          "$ref": "#/definitions/Data"
+        }
+      }
+    },
+    "CreateShopRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Huels - Schuppe"
+        },
+        "userId": {
+          "type": "integer",
+          "example": 120
+        }
+      },
+      "required": ["name", "userId"]
+    },
+    "Data": {
+      "type": "object",
+      "properties": {
+        "shops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Shop"
+          }
+        }
+      }
+    },
+    "Shop": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "name": {
+          "type": "string",
+          "example": "Huels - Schuppe"
+        },
+        "userId": {
+          "type": "integer",
+          "example": 101
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:55.598Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:55.598Z"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Product"
+          }
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "name": {
+          "type": "string",
+          "example": "Intelligent Metal Car"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://ik.imagekit.io/imamth/Profile-17-1729202156932_ieaMdNeZB.png?updatedAt=1729202158471"
+          }
+        },
+        "stock": {
+          "type": "integer",
+          "example": 28
+        },
+        "price": {
+          "type": "integer",
+          "example": 34622
+        },
+        "shopId": {
+          "type": "integer",
+          "example": 1
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:55.623Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:55.623Z"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 101
+        },
+        "name": {
+          "type": "string",
+          "example": "Jack Dietrich DVM"
+        },
+        "age": {
+          "type": "integer",
+          "example": 26
+        },
+        "address": {
+          "type": "string",
+          "example": "66849 Terry Curve"
+        },
+        "role": {
+          "type": "string",
+          "example": "admin"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:46.981Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-10-22T09:05:46.981Z"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "Failed"
+        },
+        "message": {
+          "type": "string",
+          "example": "Invalid input"
+        },
+        "isSuccess": {
+          "type": "boolean",
+          "example": false
+        },
+        "data": {
+          "type": "null",
+          "example": null
+        }
+      }
+    }
   }
-  
+}
