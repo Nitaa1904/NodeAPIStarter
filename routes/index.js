@@ -7,7 +7,7 @@ const User = require("./userRouter");
 
 router.use("/products", Product);
 router.use("/shops", Shop);
-router.use("/auths", Auths);
+router.use("/auth", Auths);
 router.use("/users", User);
 
 module.exports = router;

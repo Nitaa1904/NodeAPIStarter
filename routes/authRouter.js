@@ -2,7 +2,8 @@ const router = require("express").Router();
 
 const authController = require("../controllers/authController");
 
-router.post("/login", authController.login)
+// 41. API login
+router.post("/login", authController.login);
 // router.post("", shopController.createShop);
 // router.get("", shopController.getAllShop);
 // router.get("/:id", shopController.getShopById);

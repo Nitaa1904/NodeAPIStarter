@@ -4,6 +4,7 @@ const router = require("express").Router();
 const { shopController } = require("../controllers");
 const authenticate = require("../middlewares/authenticate");
 
+// 49. tambahkan middleware authenticate
 router.post("", authenticate, shopController.createShop);
 router.get("", authenticate, shopController.getAllShop);
 router.get("/:id", authenticate, shopController.getShopById);

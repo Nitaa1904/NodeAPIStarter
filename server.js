@@ -19,7 +19,7 @@ const app = express();
 app.use(cors());
 // 3. middleware baca request body
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 // 7. panggil morgan
 app.use(morgan("dev"));

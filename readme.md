@@ -227,7 +227,7 @@ noted: di product menggunakan findAndCountAll secara bersamaan
 ## API Documentation
 
 - npm i swagger
-- npm i swagger-is-express
+- npm i swagger-iu-express
 - buat routes baru documentationRoute.js
 
 30. buat url swagger yang mengarah ke documentationRoute.js | server.js
@@ -254,3 +254,54 @@ isinya dibuat (contoh membuat dummy menggunakan ai hanya untuk tugas)
 tambahkan juga yang failed
 copy respon api gagal
 tulis perintah add new example respon failed API for post
+
+## JWT Authentication
+
+- buat folder middleware/authenticate.js
+
+34. tambahkan middleware authenticate di get | productRouter.js
+35. buat module function authenticate | authenticate.js
+
+#### request header authorization
+
+![Deskripsi Gambar](public/images/req-hader-aut.png)
+saat di send akan muncul test di terminal
+
+- npm i jsonwebtoken (package token)
+- digenerate saat user berhasil login
+
+36. buat respon jika tidak ada request (token kosong) | authenticate.js
+37. buat respon jika tokenya ada tetapi salah | authenticate.js
+38. edit authController agar saat login menggunakan email password (token)
+39. mencari data usernya
+40. validasi user jika tidak ada
+
+untuk ambil email user untuk login
+
+- buka pg admin
+  schema/Tables/auth klik kanan view/all Rows
+  ![Deskripsi Gambar](public/images/pgAdmin.png)
+
+41. jika belum buat route login
+42. jika user ada dan password benar
+43. bcrypt untuk password
+44. generate token menggunakan jwt
+45. simpan di jwt dan buat di env
+46. expire dan buat juga di jwt
+47. panggil token di respon 200
+
+48. validasi jsonwebtoken dari client ke api benar apa gak | authenticate.js
+
+cek di postman
+![Deskripsi Gambar](public/images/pgAdmin-email.png)
+![Deskripsi Gambar](public/images/cekToken.png)
+![Deskripsi Gambar](public/images/login.png)
+
+#### implementasi di create shop
+
+user harus login sebelum membuat toko
+
+49. tambahkan middleware authenticate di post create shop | shopRouter.js
+50. panggil user.id yang dari middleware |shopController
+
+- di get {{nama_url}}/products/1

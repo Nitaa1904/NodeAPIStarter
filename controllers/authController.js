@@ -1,8 +1,10 @@
+// 43. import bcrypt untuk password
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { where } = require("sequelize");
 const { Auths, Users } = require("../models");
 const { JsonWebTokenError } = require("jsonwebtoken");
+const { Where } = require("sequelize/lib/utils");
 
 const register = async (req, res, next) => {
   try {
@@ -15,8 +17,10 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
+    // 38. login menggunakan email password (token)
     const { email, password } = req.body;
 
+    // 39. mencari data by email
     const data = await Auths.findOne({
       include: [
         {
@@ -24,11 +28,12 @@ const login = async (req, res, next) => {
           as: "user",
         },
       ],
-      where: {
+      Where: {
         email,
       },
     });
 
+    // 40. validasi user
     if (!data) {
       return res.status(404).json({
         status: "Failed",
@@ -38,27 +43,32 @@ const login = async (req, res, next) => {
       });
     }
 
-    // console.log(data);
+    // 42. jika user ada dan password benar
     if (data && bcrypt.compareSync(password, data.password)) {
+      // 43. menggunakan bcrypt untuk password
       const token = jwt.sign(
+        // 44. generate token menggunakan jwt
         {
           id: data.id,
           username: data.user.name,
           email: data.email,
           userId: data.user.id,
         },
+        // 45. simpan di jwt dan buat di env
         process.env.JWT_SECRET,
         {
+          // 46. expire dan buat juga di jwt
           expiresIn: process.env.JWT_EXPIRED,
         }
       );
 
       res.status(200).json({
         status: "Success",
-        message: "Berhasil login",
+        message: "Success login",
         isSuccess: true,
         data: {
           username: data.user.name,
+          // 47. panggil token
           token,
         },
       });

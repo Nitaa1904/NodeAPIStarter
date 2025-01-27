@@ -9,6 +9,7 @@ const createShop = async (req, res) => {
     const newShop = await Shops.create({
       name,
       adminEmail,
+      // 50. panggil user.id yang dari middleware
       userId: req.user.id,
     });
 
