@@ -16,59 +16,87 @@ Proyek ini adalah backend aplikasi berbasis **Node.js** dan **Express.js** yang 
 
 ---
 
-# Langkah Langkah
+# Langkah-Langkah
 
-- npm init
-- buat bin/www (untuk start project)
-- set package.json (ngebaca bi/www)
+- `npm init`
+- Buat `bin/www` (untuk start project)
+- Set `package.json` agar membaca `bin/www`:
+  ```json
   "start": "node -r dotenv/config bin/www",
-  "dev": "nodemon -r dotenv/config bin/www",
-  dan lainnya
-- npm install dotenv nodemon morgan express
-- buat server.js
+  "dev": "nodemon -r dotenv/config bin/www"
+  ```
+  dan lainnya.
+- `npm install dotenv nodemon morgan express`
+- Buat `server.js`
 
-1. import modul di server.js (expresss, morgan)
-   const app dan module.export
-2. buat health-check || server.js
+### 1. Import Modul di `server.js`
+
+- Gunakan `express` dan `morgan`.
+- Definisikan `const app` dan `module.exports`.
+
+### 2. Buat Health-Check di `server.js`
 
 ## Database Diagram
 
-3. middleware baca request body || server.js
+### 3. Middleware untuk Membaca Request Body di `server.js`
 
-- menggunakan db diagram
-<p align="center">
-  <img src="public/images/db-diagram.png" alt="alt text" width="500" />
-</p>
+- Menggunakan DB Diagram:
+  <p align="center">
+    <img src="public/images/db-diagram.png" alt="Database Diagram" width="500" />
+  </p>
 
-### migrations
+## Migrations
 
-- buat relasi model di sequelize
-- npm i sequelize sequelize-cli pg pg-hstore
-- npx sequlize init
-- npx sequelize model:generate --name Products --attributes name:string,images:array,stock:integer,price:integer
-- npx sequelize model:generate --name Shops --attributes name:string,productId:integer,userId:integer
-- settting validasi atau modifikasi data disetiap kolomnya yang mau masuk ke database || migrations
-  noted boleh diubah2 isinya disesuaikan sebelum di migrate
-- npm run db:migrate
-- set config/config.json
-- npx sequelize db:create (jika databasenya baru)
-- npx sequelize db:migrate
+- Buat relasi model di Sequelize.
+- Instal dependensi:
+  ```sh
+  npm install sequelize sequelize-cli pg pg-hstore
+  ```
+- Inisialisasi Sequelize:
+  ```sh
+  npx sequelize init
+  ```
+- Buat model dan migration:
+  ```sh
+  npx sequelize model:generate --name Products --attributes name:string,images:array,stock:integer,price:integer
+  npx sequelize model:generate --name Shops --attributes name:string,productId:integer,userId:integer
+  ```
+- Setting validasi atau modifikasi data di setiap kolom sebelum migrate.
+- Jalankan migrasi:
+  ```sh
+  npm run db:migrate
+  ```
+- Set konfigurasi di `config/config.json`.
+- Buat database jika belum ada:
+  ```sh
+  npx sequelize db:create
+  ```
+- Jalankan migrasi:
+  ```sh
+  npx sequelize db:migrate
+  ```
 
-### models
+## Models
 
-- cek apakah udah sesuai dengan yang ada di miggrations
-- tambahkan validate dan overide message
+- Cek apakah model sudah sesuai dengan migration.
+- Tambahkan validasi dan override message.
 
-### Controllers
+## Controllers
 
-- index.js isinya refaktor agar modular
-- buat productCotroller.js
+- Buat `index.js` untuk refaktor agar modular.
+- Buat `productController.js`.
 
-4. buat function createProduct, getAllProduct, getProductById, updateProduct, deleteProduct
+### 4. Buat Fungsi CRUD
 
-#### Better Error Handling
+- `createProduct`
+- `getAllProduct`
+- `getProductById`
+- `updateProduct`
+- `deleteProduct`
 
-tambahkan di semua controller
+### Better Error Handling
+
+Tambahkan di semua controller:
 
 ```javascript
 catch (error) {
@@ -107,201 +135,223 @@ catch (error) {
 }
 ```
 
-### Routes
+## Routes
 
-- index.js isinya refaktor agar modular
+- `index.js` untuk refaktor agar modular.
 
-5. buat API post, get, get by id, pactch, delete (productRoutes.js)
-6. defind di routes/index.js dan panggil router di server.js
+### 5. Buat API Routes (`productRoutes.js`)
 
-   noted : buat konfigurasi mvp lainya sesuai db diagram (model, view, and controller)
-   tips untuk shop dan product hampir sama jadi tinggal dublicated dan ubah isinya sesuai tabel aja
+- **POST**: Menambahkan produk.
+- **GET**: Mengambil semua produk.
+- **GET by ID**: Mengambil produk berdasarkan ID.
+- **PATCH**: Memperbarui produk.
+- **DELETE**: Menghapus produk.
+- Definisikan di `routes/index.js` dan panggil router di `server.js`.
 
-### seeder
+_Noted_: Buat konfigurasi MVP lainnya sesuai dengan DB Diagram (Model, View, Controller).
+_Tips_: Struktur untuk Shop dan Product hampir sama, cukup duplikasi dan sesuaikan isinya.
 
-- npm i faker bcrypt | auth.js
-  faker untuk membuat data dummy
+## Seeder
 
-### systemController
+- Instal dependensi untuk membuat data dummy:
+  ```sh
+  npm install faker bcrypt
+  ```
+- Buat file `auth.js` untuk autentikasi.
 
-refactor health-check dan 404 not found (untuk hendel semua yang ada di sistem)
+## SystemController
 
----
+- Refaktor health-check dan handling **404 Not Found** untuk menangani semua error di sistem.
 
 ## Relasi
 
-belongsTo (jika ditabel ada foreignKey)
-hasMany
-hasOne
+- `belongsTo` (digunakan jika tabel memiliki foreignKey)
+- `hasMany`
+- `hasOne`
 
 ## Set Variabel di Postman
 
-buat base url
+Buat base URL:
 
-- di postman {{nama_url}} lalu hover dan isi valuenya dengan localhost:3000/API/v1
-- untuk menyimpan klik + add to dan pilih collection
+1. Di Postman, gunakan `{{nama_url}}`, lalu hover dan isi valuenya dengan `localhost:3000/API/v1`.
+2. Untuk menyimpan, klik `+ Add to` dan pilih `Collection`.
 
 ---
 
-## Finalisasi config untuk server.js
+## Finalisasi Konfigurasi untuk `server.js`
 
-7. panggil morgan
-   morgan (untuk logger('dev')) adalah middleware Node.js dan Express yang digunakan untuk mencatat permintaan dan kesalahan HTTP
-8. panggil dotenv di baris pertama run apk, menandakan semua koding BE untuk panggil env
-9. panggil cors (agar API bisa dihit saat sudah dideploy, semua FE bisa akses api)
-   npm i cors
+7. Panggil `morgan`:
+   - `morgan` (untuk `logger('dev')`) adalah middleware Node.js dan Express yang digunakan untuk mencatat permintaan dan kesalahan HTTP.
+8. Panggil `dotenv` di baris pertama saat menjalankan aplikasi, menandakan bahwa semua kode backend dapat memanggil variabel dari file `.env`.
+9. Panggil `cors` agar API dapat diakses saat sudah dideploy, memungkinkan semua frontend untuk mengakses API.
+   - Install dengan perintah: `npm i cors`
 
-## attributes di sequelize query
+## Attributes di Sequelize Query
 
-- misal hanya butuh "name", "images", "stock", "price" yang ditampilkan maka bisa menggunakan atribut
-- atribut dalam bentuk array
+- Jika hanya membutuhkan beberapa kolom tertentu seperti `name`, `images`, `stock`, dan `price`, maka dapat menggunakan atribut.
+- Atribut dituliskan dalam bentuk array.
 
-10. panggil kolom apa aja yang akan ditampilkan di getAllShop | shopController
+10. Panggil kolom apa saja yang akan ditampilkan di `getAllShop` dalam `shopController`.
 
-## where advance dari join table untuk filter, pagination dan limit/row
+## Where Advance dari Join Table untuk Filter, Pagination, dan Limit/Row
 
 ### Dinamis Filter
 
-11. jaga request query agar tidak kemana-mana dengan objek destrukturing
-12. cek kondisi statis dulu
-13. import OP, salah satu method sequelize untuk where dinamis kondisi (untuk handel saat kondisi statis harus serch namanya sama persis dengan yang ada didatabase menjadi dinamis) misal serch apel (statis) akan muncul tapi saat serch ape tidak muncu datanya tapi saat dinamis akan muncul data yang ada kata ape nya
+11. Jaga request query agar tidak meluas dengan objek destructuring.
+12. Cek kondisi statis terlebih dahulu.
+13. Import `Op`, salah satu metode Sequelize untuk `where` dinamis (memungkinkan pencarian lebih fleksibel).
 
-14. buat kondisi OP
+    - Contoh: Jika pencarian statis hanya menampilkan data yang cocok persis (`apel`), pencarian dinamis akan menampilkan data yang mengandung kata `ape`.
 
-- iLike `%${shopName}%` (tabahkan % untuk mengabaikan kata lainnya asalkan ada yang benar)
-- bedanya sama like itu di case sensitive (iLike mengabaikan huruf besar kecil)
+14. Buat kondisi `Op`:
 
-15. Panggil kondisinya
-16. buat juga kondisi pada product dan user, panggil where sesuai kondisiya masing2 di include
+    - Menggunakan `iLike '%${shopName}%'` (tambahkan `%` agar tetap menampilkan hasil yang mengandung kata yang dicari).
+    - `iLike` berbeda dengan `LIKE`, karena tidak case-sensitive (mengabaikan huruf besar/kecil).
 
-- cara get di postmannya {{nama_url}}/shops?shopName=collin (ganti collin dengan nama toko yang dicari)
+15. Panggil kondisi `where` yang telah dibuat.
+16. Buat juga kondisi pada `product` dan `user`, lalu panggil `where` sesuai kondisinya masing-masing dalam `include`.
 
-- saat user mau mencari product yang kurang dari 25 (misal)
+    - Cara menggunakannya di Postman: `{{nama_url}}/shops?shopName=collin` (ganti `collin` dengan nama toko yang dicari).
+    - Jika ingin mencari produk dengan stok kurang dari 25: `{{nama_url}}/shops?stock<25`
 
-17. tambah total data di respon untuk menampilkan banyaknya data berdasarkan hasil filternya
+17. Tambahkan total data di respons untuk menampilkan jumlah hasil yang difilter.
 
-### Paginations
+### Pagination
 
-- page => halaman
-- size => banyaknya data
+- `page` → halaman
+- `size` → jumlah data per halaman
 
-#### size Statis Paginations
+#### Size Statis Pagination
 
-18. tambah limit: 10, = > set get berapa data di row query (batasan data)
+18. Tambahkan `limit: 10` untuk membatasi jumlah data yang ditampilkan per query.
 
-#### size Dinamis Paginations
+#### Size Dinamis Pagination
 
-- tambahkan size di const request paramnya
+- Tambahkan `size` dalam `const` request param.
 
-19. buat size pagination
-20. panggil pageSize
-    get di postman {{nama_url}}/shops?size=13 (ganti size sesuai keinginan)
+19. Buat size pagination.
+20. Panggil `pageSize`.
+    - Contoh penggunaan di Postman: `{{nama_url}}/shops?size=13` (ganti `size` sesuai kebutuhan).
 
 #### Page
 
-- tambahkan page di const request paramnya
+- Tambahkan `page` dalam `const` request param.
 
-21. buat pageNum dengan default halaman 1
+21. Buat `pageNum` dengan default halaman `1`.
+22. Buat `offset`.
+23. Tambahkan `offset` ke dalam query.
 
-22. buat offset
-23. tambah offset
+24. Buat `totalCount` (mengambil semua data dari query).
+25. Buat `totalPage` (menghitung jumlah halaman berdasarkan total data).
+26. Tambahkan informasi pagination dalam respons untuk memberi tahu client mengenai halaman dan ukuran data yang ditampilkan.
 
-24. buat totalCount (ambil semua data dari query)
-25. buat totalPage (banyaknya halaman)
-26. tambah pagination untuk kasih tau client informasi page brapa size berapa
-27. paggil totalData dengan hasil totalCount, totalData: totalCount,
-    - get di postman {{nama_url}}/shops?size=13 (ganti size sesuai keinginan)
-    - akan tampil totalData, page, size, pageSize
+    - Contoh penggunaan di Postman: `{{nama_url}}/shops?size=13`
+    - Akan menampilkan `totalData`, `page`, `size`, dan `pageSize`.
 
-- cek pagination di postman
-- get di postman {{nama_url}}/shops?size=30&page=2 (ganti size dan page sesuai keinginan)
+27. Cek pagination di Postman:
 
-28. tambahkan kondisi product dan user agar hasil total datanya benar saat serch data tertentu dan banyaknya data sesuai dengan yang terfilter
-    - get di postman {{nama_url}}/shops?size=1&page=1&productName=pizza (ganti size, page, productName sesuai keinginan)
-    - akan tampil totalData dengan nama pizza 5 (contohnya sesuai data asli di query) dan yang tampil di FE cuman satu (size 1)
-29. Tambahkan kondisi utuk shopName juga agar saat shopName difilter sesuai totalPage(semua data dengan nama tertentu) dan sesuai size yang di filter
-    get di postman {{nama_url}}/shops?size=1&page=1&shopName=Group (ganti size, page, productName sesuai keinginan)
+    - `{{nama_url}}/shops?size=30&page=2` (ganti `size` dan `page` sesuai kebutuhan).
 
-noted: di product menggunakan findAndCountAll secara bersamaan
+28. Tambahkan kondisi pada `product` dan `user` agar hasil `totalData` sesuai dengan pencarian yang difilter.
+
+    - Contoh di Postman: `{{nama_url}}/shops?size=1&page=1&productName=pizza`
+    - Jika terdapat 5 produk `pizza`, maka `totalData = 5`, tetapi yang ditampilkan hanya `size = 1`.
+
+29. Tambahkan kondisi untuk `shopName`, agar saat filter dilakukan, total halaman dan data sesuai dengan hasil pencarian.
+    - Contoh di Postman: `{{nama_url}}/shops?size=1&page=1&shopName=Group`
+
+**Catatan:** Pada `product`, gunakan `findAndCountAll` secara bersamaan untuk mendapatkan total data sekaligus.
 
 ## API Documentation
 
-- npm i swagger
-- npm i swagger-iu-express
-- buat routes baru documentationRoute.js
+### Instalasi Swagger
 
-30. buat url swagger yang mengarah ke documentationRoute.js | server.js
-31. buat route baru docsRouter | server.js
-32. buat swaggerDocument dalam bentuk swagger.json | documentationRoute.js
-33. buat url use dan get swagger | documentationRoute.js
+1. Jalankan perintah berikut untuk menginstal Swagger:
+   ```sh
+   npm i swagger
+   npm i swagger-ui-express
+   ```
+2. Buat file `documentationRoute.js`.
 
-buat docs/swagger.json
-isinya dibuat (contoh membuat dummy menggunakan ai hanya untuk tugas)
+### Konfigurasi Swagger
 
-- GET
-  get api shop
-  copy responnya, copy url atau api
-  tulis perintah create swagger.json for node js express project fot this API
-  tambah ke swagger.jsnya
-  sesuaikan schemanya dengan database
-  localhost:3000/api-docs/ (coba di browser)
-- POST
-  post api shop
-  copy url, request body, respon api
-  tulis perintah for create http method POST
-  sesuaikan responya dengan yang ada di localhost
+3. Tambahkan URL Swagger yang mengarah ke `documentationRoute.js` di `server.js`.
+4. Buat route baru `docsRouter` di `server.js`.
+5. Buat `swaggerDocument` dalam bentuk `swagger.json` di `documentationRoute.js`.
+6. Tambahkan endpoint `use` dan `get` untuk Swagger di `documentationRoute.js`.
 
-tambahkan juga yang failed
-copy respon api gagal
-tulis perintah add new example respon failed API for post
+### Pembuatan `swagger.json`
+
+7. Buat file `docs/swagger.json` dan tambahkan skema berikut sebagai contoh:
+   - **GET**
+     - Endpoint: `GET /api/shop`
+     - Salin respons dari API dan URL terkait.
+     - Gunakan perintah untuk membuat `swagger.json` untuk proyek Node.js Express ini.
+     - Sesuaikan skema dengan database.
+     - Coba akses di browser: `http://localhost:3000/api-docs/`.
+   - **POST**
+     - Endpoint: `POST /api/shop`
+     - Salin URL, request body, dan respons API.
+     - Gunakan perintah untuk membuat HTTP method POST.
+     - Sesuaikan respons dengan API di `localhost`.
+   - **Error Handling**
+     - Salin respons API gagal.
+     - Tambahkan contoh respons gagal di `swagger.json`.
+
+---
 
 ## JWT Authentication
 
-- buat folder middleware/authenticate.js
+### Implementasi Middleware
 
-34. tambahkan middleware authenticate di get | productRouter.js
-35. buat module function authenticate | authenticate.js
+1. Buat folder `middleware/` dan file `authenticate.js`.
+2. Tambahkan middleware `authenticate` di **GET** | `productRouter.js`.
+3. Buat module function `authenticate` di `authenticate.js`.
 
-#### request header authorization
+### Request Header Authorization
 
-![Deskripsi Gambar](public/images/req-hader-aut.png)
-saat di send akan muncul test di terminal
+- Pastikan request header authorization dikirim dengan format yang benar.
+- Kirim request dan cek log di terminal untuk memastikan middleware berfungsi.
 
-- npm i jsonwebtoken (package token)
-- digenerate saat user berhasil login
+### Instalasi JWT
 
-36. buat respon jika tidak ada request (token kosong) | authenticate.js
-37. buat respon jika tokenya ada tetapi salah | authenticate.js
-38. edit authController agar saat login menggunakan email password (token)
-39. mencari data usernya
-40. validasi user jika tidak ada
+1. Instal package JSON Web Token:
+   ```sh
+   npm i jsonwebtoken
+   ```
+2. Generate token saat user berhasil login.
 
-untuk ambil email user untuk login
+### Validasi JWT
 
-- buka pg admin
-  schema/Tables/auth klik kanan view/all Rows
-  ![Deskripsi Gambar](public/images/pgAdmin.png)
+1. Tambahkan validasi jika tidak ada request token (token kosong) di `authenticate.js`.
+2. Tambahkan validasi jika token ada tetapi salah di `authenticate.js`.
+3. Edit `authController` agar login menggunakan email dan password dengan JWT.
+4. Cari data user berdasarkan email.
+5. Validasi user jika tidak ditemukan.
 
-41. jika belum buat route login
-42. jika user ada dan password benar
-43. bcrypt untuk password
-44. generate token menggunakan jwt
-45. simpan di jwt dan buat di env
-46. expire dan buat juga di jwt
-47. panggil token di respon 200
+### Mengambil Data User untuk Login
 
-48. validasi jsonwebtoken dari client ke api benar apa gak | authenticate.js
+1. Buka **pgAdmin**.
+2. Navigasi ke `schema/Tables/auth` lalu klik kanan `View All Rows`.
 
-cek di postman
-![Deskripsi Gambar](public/images/pgAdmin-email.png)
-![Deskripsi Gambar](public/images/cekToken.png)
-![Deskripsi Gambar](public/images/login.png)
+### Implementasi Login
 
-#### implementasi di create shop
+1. Jika route login belum ada, buat route login.
+2. Pastikan validasi user:
+   - Jika user ditemukan dan password benar.
+3. Gunakan **bcrypt** untuk hash password.
+4. Generate token menggunakan **JWT**.
+5. Simpan token di **.env**.
+6. Tentukan waktu expire untuk token di **JWT**.
+7. Kirim token dalam respons **200**.
+8. Validasi token dari client ke API di `authenticate.js`.
+9. Uji coba menggunakan **Postman**.
 
-user harus login sebelum membuat toko
+### Implementasi Middleware di Create Shop
 
-49. tambahkan middleware authenticate di post create shop | shopRouter.js
-50. panggil user.id yang dari middleware |shopController
+1. Tambahkan middleware `authenticate` di POST | `shopRouter.js`.
+2. Panggil `user.id` dari middleware di `shopController.js`.
 
-- di get {{nama_url}}/products/1
+### Contoh Penggunaan API
+
+- **GET** `{{nama_url}}/products/1`
