@@ -21,7 +21,28 @@ module.exports = async (req, res, next) => {
     // 48. validasi jsonwebtoken
     const token = bearerToken.split("Bearer")[1]; // hanya ngambil tokenya aja
     const payload = jwt.verify(token, process.env.JWT_SECRET); // pauload (data user) menggunakan wentoken json verify
-    const user = await Users.findByPk(payload.userId, {}); // middleware (mengambil usernya)
+    const user = await Users.findOne({
+      where: {
+        id: payload.id,
+      },
+    }); // middleware (mengambil usernya)
+    if (!payload) {
+      return res.status(401).json({
+        status: "Failed",
+        message: "Unauthorized",
+        isSuccess: false,
+        data: null,
+      });
+    }
+
+    if (!user) {
+      return res.status(401).json({
+        status: "Failed",
+        message: "User not found",
+        isSuccess: false,
+        data: null,
+      });
+    }
 
     // disimpan user yg udah login
     req.user = user;
@@ -35,4 +56,5 @@ module.exports = async (req, res, next) => {
       data: null,
     });
   }
+  next();
 };
