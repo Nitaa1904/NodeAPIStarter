@@ -310,6 +310,8 @@ Buat base URL:
 
 ### Request Header Authorization
 
+![Deskripsi Gambar](public/images/req-hader-aut.png)
+
 - Pastikan request header authorization dikirim dengan format yang benar.
 - Kirim request dan cek log di terminal untuk memastikan middleware berfungsi.
 
@@ -333,8 +335,13 @@ Buat base URL:
 
 1. Buka **pgAdmin**.
 2. Navigasi ke `schema/Tables/auth` lalu klik kanan `View All Rows`.
+   ![Deskripsi Gambar](public/images/pgAdmin.png)
 
 ### Implementasi Login
+
+![Deskripsi Gambar](public/images/pgAdmin-email.png)
+![Deskripsi Gambar](public/images/cekToken.png)
+![Deskripsi Gambar](public/images/login.png)
 
 1. Jika route login belum ada, buat route login.
 2. Pastikan validasi user:
