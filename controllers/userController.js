@@ -1,9 +1,17 @@
-const { Users } = require("../models");
+const { Users, Auths } = require("../models");
 const { Op } = require("sequelize");
 
 const findUsers = async (req, res, next) => {
   try {
-    const { name, age, role, address, shopId, page = 1, limit = 10 } = req.query;
+    const {
+      name,
+      age,
+      role,
+      address,
+      shopId,
+      page = 1,
+      limit = 10,
+    } = req.query;
 
     const userCondition = {};
 
@@ -16,6 +24,12 @@ const findUsers = async (req, res, next) => {
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     const users = await Users.findAndCountAll({
+      include: [
+        {
+          model: Auths,
+          as: "auth",
+        },
+      ],
       where: userCondition,
       limit: parseInt(limit),
       offset: offset,

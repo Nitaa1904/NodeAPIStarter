@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
 const { Users } = require("../models");
+const users = require("../models/users");
 
 // 35. buat module function authenticate
 module.exports = async (req, res, next) => {
-  console.log(req.headers.authorization);
-
   try {
     const bearerToken = req.headers.authorization;
 
@@ -19,13 +18,16 @@ module.exports = async (req, res, next) => {
     }
 
     // 48. validasi jsonwebtoken
-    const token = bearerToken.split("Bearer")[1]; // hanya ngambil tokenya aja
+    const token = bearerToken.split(" ")[1]; // hanya ngambil tokenya aja
+    if (!token) {
+      return res.status(401).json({
+        status: "Failed",
+        message: "Invalid token format",
+        isSuccess: false,
+        data: null,
+      });
+    }
     const payload = jwt.verify(token, process.env.JWT_SECRET); // pauload (data user) menggunakan wentoken json verify
-    const user = await Users.findOne({
-      where: {
-        id: payload.id,
-      },
-    }); // middleware (mengambil usernya)
     if (!payload) {
       return res.status(401).json({
         status: "Failed",
@@ -34,6 +36,7 @@ module.exports = async (req, res, next) => {
         data: null,
       });
     }
+    const user = await Users.findByPk(payload.userId);
 
     if (!user) {
       return res.status(401).json({
@@ -49,12 +52,11 @@ module.exports = async (req, res, next) => {
     next();
   } catch (err) {
     // 37. tokenya ada tetapi salah
-    return res.status(500).json({
+    return res.status(403).json({
       status: "Failed",
       message: err.message,
       isSuccess: false,
       data: null,
     });
   }
-  next();
 };

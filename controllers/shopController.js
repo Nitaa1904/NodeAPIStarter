@@ -1,9 +1,9 @@
-const { Shops, Products, Users } = require("../models");
+const { Products, Users, Shops } = require("../models");
 // 13. import OP
 const { Op, where } = require("sequelize");
 
 const createShop = async (req, res) => {
-  const { name, adminEmail, userId } = req.body;
+  const { name, adminEmail } = req.body;
 
   try {
     const newShop = await Shops.create({
@@ -15,12 +15,14 @@ const createShop = async (req, res) => {
 
     res.status(201).json({
       status: "Success",
-      message: "Successfully created new Shop",
+      message: "Success create new Shop",
       isSuccess: true,
-      data: { newShop },
+      data: {
+        newShop,
+      },
     });
   } catch (error) {
-    console.log(error.name);
+    console.log("Error:", error);
     if (error.name === "SequelizeValidationError") {
       const errorMessage = error.errors.map((err) => err.message);
       return res.status(400).json({
@@ -29,11 +31,10 @@ const createShop = async (req, res) => {
         isSuccess: false,
         data: null,
       });
-      // name harus string jika integer maka responya berikut
     } else if (error.name === "SequelizeDatabaseError") {
       return res.status(400).json({
         status: "Failed",
-        message: error.message || "Database Error",
+        message: error.message || "Database error",
         isSuccess: false,
         data: null,
       });
@@ -76,17 +77,21 @@ const getAllShop = async (req, res) => {
 
     // 24. buat totalCount
     const totalCount = await Shops.count({
+      distinct: true,
+      col: "id",
       include: [
         {
           model: Products,
           as: "products",
           // 28. tambahkan kondisi agar hasil total datanya sesuai saat filter
+          required: !!Object.keys(productCondition).length,
           where: productCondition,
         },
         {
           model: Users,
           as: "user",
           // 28. tambahkan kondisi agar hasil total datanya sesuai saat filter
+          required: !!Object.keys(userCondition).length,
           where: userCondition,
         },
       ],
@@ -101,6 +106,7 @@ const getAllShop = async (req, res) => {
           as: "products",
           // 10. panggil apa aja yang akan ditampilkan
           attributes: ["name", "images", "stock", "price"],
+          required: !!Object.keys(productCondition).length,
           where: productCondition,
         },
         {
@@ -108,16 +114,18 @@ const getAllShop = async (req, res) => {
           as: "user",
           // 10. panggil apa aja yang akan ditampilkan
           attributes: ["name"],
+          required: !!Object.keys(userCondition).length,
           where: userCondition,
         },
       ],
       // 10. agar lebih optimize
-      attributes: ["name", "adminEmail"],
+      attributes: ["id", "name", "adminEmail"],
       // where: { name: shopName } => (12. Kondisi statis)
       // 15. Panggil kondisinya
       where: condition,
       // 18. tambah limit (limit: 10, (statis))
       limit: pageSize, // 20. panggil pagesize
+      order: [["id", "DESC"]],
       // 23. panggil offset
       offset,
     });
