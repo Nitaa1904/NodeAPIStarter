@@ -17,9 +17,18 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
+    console.log(req.body);
     // 38. login menggunakan email password (token)
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        status: "Failed",
+        message: "Email and password are required",
+        isSuccess: false,
+        data: null,
+      });
+    }
     // 39. mencari data by email
     const data = await Auths.findOne({
       include: [
@@ -28,10 +37,9 @@ const login = async (req, res, next) => {
           as: "user",
         },
       ],
-      Where: {
-        email,
-      },
+      where: { email: email },
     });
+    console.log(data);
 
     // 40. validasi user
     if (!data) {
@@ -69,7 +77,7 @@ const login = async (req, res, next) => {
         data: {
           username: data.user.name,
           // 47. panggil token
-          token,
+          token: token,
         },
       });
     } else {
