@@ -6,6 +6,8 @@ const express = require("express");
 const morgan = require("morgan");
 // 9. panggil cors
 const cors = require("cors");
+const path = require("path");
+const expressEJSLayout = require("express-ejs-layouts");
 
 const router = require("./routes");
 // 31. buat route baru
@@ -23,6 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // 7. panggil morgan
 app.use(morgan("dev"));
+
+app.use(express.static(`${__dirname}/public`));
+app.set("view engine", "ejs");
+
+app.set("views", path.join(__dirname, "views"));
+app.use(expressEJSLayout);
+app.set("layout", "layout");
+
+const Dashboard = require("./routes/dashboardRoute");
+app.use("/dashboard", Dashboard);
 
 // 2. buat health-check
 app.get("/api/v1/health-check", systemController.healtcheck);

@@ -1,0 +1,44 @@
+<h2 class="text-3xl font-bold text-teal-800 mb-6">Users List</h2>
+
+<table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+  <thead class="bg-teal-700 text-white">
+    <tr>
+      <th class="p-3 text-left">ID</th>
+      <th class="p-3 text-left">Name</th>
+      <th class="p-3 text-left">Email</th>
+      <th class="p-3 text-center">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (users.length > 0) { %> <% users.forEach(user => { %>
+    <tr class="border-b border-gray-200">
+      <td class="p-3"><%= user.id %></td>
+      <td class="p-3"><%= user.name %></td>
+      <td class="p-3"><%= user.email %></td>
+      <td class="p-3 flex justify-center space-x-2">
+        <a
+          href="/dashboard/admin/users/<%= user.id %>"
+          class="text-blue-500 hover:underline"
+        >
+          View
+        </a>
+
+        <a
+          href="/admin/users/<%= user.id %>/edit"
+          class="text-yellow-500 hover:underline"
+          >Edit</a
+        >
+        <a
+          href="/admin/users/<%= user.id %>/delete"
+          class="text-red-500 hover:underline"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    <% }); %> <% } else { %>
+    <tr>
+      <td colspan="4" class="p-3 text-center text-gray-500">No users found.</td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>

@@ -1,0 +1,87 @@
+<main>
+  <div class="container mt-5">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold text-pink">🌟 Create User Profile 🌟</h2>
+      <p class="text-muted">
+        Fill out the form to add a new user. Let's make it cute! 😊
+      </p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form
+          class="p-4 border rounded-3 shadow-sm"
+          style="background-color: #fff6f9"
+          action="/dashboard/admin/users/create"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label for="firstName" class="form-label text-pink"
+                >First Name</label
+              >
+              <input
+                type="text"
+                class="form-control input-cute"
+                id="firstName"
+                name="firstName"
+                placeholder="Enter first name"
+                required
+              />
+              <div class="invalid-feedback">First name is required!</div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="photo" class="form-label text-pink"
+                >Photo Profile</label
+              >
+              <input
+                type="file"
+                class="form-control input-cute"
+                id="photo"
+                name="photo"
+                required
+              />
+              <div class="invalid-feedback">Photo is required!</div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="age" class="form-label text-pink">Age</label>
+              <input
+                type="number"
+                class="form-control input-cute"
+                id="age"
+                name="age"
+                placeholder="Enter age"
+                required
+              />
+              <div class="invalid-feedback">Age is required!</div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="phoneNumber" class="form-label text-pink"
+                >Phone Number</label
+              >
+              <input
+                type="tel"
+                class="form-control input-cute"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="Enter phone number"
+                required
+              />
+              <div class="invalid-feedback">Phone number is required!</div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <button class="btn btn-cute btn-lg w-100" type="submit">
+              🌸 Submit User 🌸
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

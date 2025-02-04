@@ -1,0 +1,16 @@
+<h2 class="text-3xl font-bold text-teal-800 mb-6">User Details</h2>
+
+<div class="bg-white shadow-md rounded-lg p-6">
+  <p><strong>ID:</strong> <%= user.id %></p>
+  <p><strong>Name:</strong> <%= user.name %></p>
+  <p><strong>Email:</strong> <%= user.email %></p>
+  <p><strong>Role:</strong> <%= user.role %></p>
+  <p><strong>Address:</strong> <%= user.address %></p>
+</div>
+
+<a
+  href="/dashboard/admin/users"
+  class="mt-4 inline-block bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+>
+  🔙 Back to Users List
+</a>
